@@ -96,6 +96,30 @@ sequenceDiagram
 - **Different files** → Git combines both automatically.
 - **Same file, same lines** → Git asks you to resolve a conflict once.
 
+### What “resolve a conflict” actually means (and how to do it in a hybrid team)
+
+**You don’t log in to Git to see the differences.** When Git can’t merge the same lines automatically, it does three things:
+
+1. **Terminal:** After `git pull`, the terminal will say something like `CONFLICT (content): Merge conflict in <filename>` and list the conflicted files. It does **not** show the full diff in the terminal—it just tells you which files have conflicts.
+2. **In the file:** Git writes **conflict markers** directly into the file and leaves both versions in place so you can see them. You open the file in your **editor** (Cursor, VS Code, etc.) and you’ll see something like:
+   ```
+   <<<<<<< HEAD
+   your version of the lines
+   =======
+   their version of the lines
+   >>>>>>> origin/dev-workspace
+   ```
+   Your editor often highlights these regions and may show buttons like **Accept Current Change**, **Accept Incoming Change**, or **Accept Both**.
+3. **Resolving:** You edit the file to keep what should stay (yours, theirs, or a combination), **delete the conflict markers** (`<<<<<<<`, `=======`, `>>>>>>>`), save, then `git add <filename>`, commit, and push.
+
+**Most effective way for two team members (hybrid) to resolve it:**
+
+- **Option A — One person resolves (simplest):** The person who got the conflict (usually the one who pulled second) opens the file in Cursor/VS Code, uses the editor’s “Accept Current / Incoming / Both” or manually edits to the correct result, saves, commits, and pushes. The other person later runs `./scripts/pull-latest.sh` and gets the resolved version. No need to be in the same room or on a call.
+- **Option B — Quick alignment then resolve:** If it’s a non-obvious choice (e.g. two different implementations), a short message (Slack, etc.): “Conflict in `Dashboard.tsx` around the header—I’ll keep both: your title, my styling. Resolving and pushing.” Then that person resolves as in Option A. The other just pulls and continues.
+- **Option C — Screen-share or pair:** For a tricky or high-stakes conflict, hop on a short call; one person shares their screen, both look at the same conflict blocks in the editor and decide line by line, then one commits and pushes.
+
+You do **not** need to log in to GitHub in the browser to resolve. Everything you need is in your local clone and your editor; the terminal only tells you *which* files to open.
+
 ---
 
 # Slide 5 — The one rule
