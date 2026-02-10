@@ -78,9 +78,7 @@ flowchart TB
 
 ## 3. Development — EC2 dev studios (Cursor)
 
-Development is done on **shared EC2 instances** that run **Cursor**. Your laptop stays light; the VM bears the load. Each dev studio is already configured with the repo and you have your own user on the VM.
-
-### EC2 assignment (2 people per EC2)
+Development is done on **EC2 instances** that run **Cursor**. Your laptop stays light; the VM bears the load. The **DevOps team has one EC2**; the **UX/CX team has a different EC2**. Each dev studio is already configured with the repo; you have your own user on the VM (2 people per EC2).
 
 ```mermaid
 flowchart LR
@@ -115,7 +113,7 @@ flowchart LR
 ```
 
 - You will be given a **start script** to bring your EC2 instance up when you begin work.
-- **Auto-shutdown:** EC2 instances **automatically shut down every 2 hours** for cost control. We may add a “delay shutdown” option later; for now assume a 2‑hour window.
+- **Auto-shutdown:** EC2 instances **automatically shut down after two hours** for now (for cost control). We may add a delay-shutdown option later; assume a 2‑hour window and save/push often.
 - **Be diligent about saving your work:** commit and push to the playground (actionit-dev) regularly so you don’t lose work if the instance shuts down. Use the push script and pull script from this repo.
 - To stop the instance yourself:
   - Use the **stop script** you’re provided, or  
@@ -125,16 +123,17 @@ flowchart LR
 
 ## 4. Accessing your EC2 from a Mac (RDP)
 
-Everyone on the team has a MacBook. You connect to your EC2 dev studio using **Remote Desktop (RDP)**.
+Everyone on the team has a MacBook. You connect to your EC2 dev studio using **Remote Desktop (RDP)**. The RDP app we use on Mac is the one in the **Apple App Store** named **Windows** (that’s the actual app name—search for “Windows” in the App Store to find it).
 
 ```mermaid
 sequenceDiagram
   participant Mac
-  participant App as Windows RDP app
+  participant App as Windows app (App Store)
+  participant Chat as Google Chat group
   participant EC2
-  Mac->>App: Download from App Store
-  Note over Mac: Credentials via encrypted email
-  Mac->>App: Add PC + save credentials
+  Mac->>App: Download "Windows" from App Store
+  Chat->>Mac: Credentials + RDP file in group chat
+  Mac->>App: Add PC (RDP file) + credentials
   Mac->>App: Connect
   App->>EC2: RDP session
   EC2-->>Mac: Cursor / dev workspace
@@ -142,12 +141,12 @@ sequenceDiagram
 
 ### Steps
 
-1. **Download the Windows remote desktop app** from the **Apple App Store** (search for “Microsoft Remote Desktop” or “Windows Remote Desktop”).
-2. **Credentials** will be sent to you **individually via encrypted email** (user name and password for your user on the EC2).
-3. In the **Windows (RDP) app**, add a new PC/connection and **hard-set (save) your credentials** so you can connect with one tap.
+1. **Download the Windows app** from the **Apple App Store** on your MacBook (search for **“Windows”**—that’s the name of the RDP app).
+2. **Credentials** were sent in **Google Chat**. The **RDP file** for your team’s EC2 is in the **corresponding group chat** (DevOps group chat for the DevOps EC2, UX/CX group chat for the UX/CX EC2). Use that RDP file and the credentials from Chat.
+3. In the **Windows app**, add the PC/connection (using the RDP file or the connection details from Chat) and **save your credentials** so you can connect with one tap.
 4. Use the connection to **RDP into your assigned EC2** and open Cursor there as your dev workspace.
 
-If you’re on the DevOps EC2, you share that VM with one other person (each with your own Windows user). Same for UX/CX EC2—each person has their own user; the VM is shared.
+**DevOps** = one EC2 (Paul, Eugene). **UX/CX** = a different EC2 (Andrew, Asma). Each person has their own user on the shared VM.
 
 ---
 
@@ -193,7 +192,7 @@ flowchart LR
 | **Work tracking** | Jira (workflow and how-to to be added after walkthrough) |
 | **Code / Git** | actionit-dev (playground), branch dev-workspace; push/pull scripts in Onboarding repo |
 | **Dev environment** | EC2 + Cursor (start script → RDP from Mac → work in Cursor) |
-| **EC2 shutdown** | Auto every 2 hours; save/push often; use stop script or VM shutdown when done |
+| **EC2 shutdown** | Auto after 2 hours for now; save/push often; use stop script or VM shutdown when done |
 | **Build documentation** | Create/ask Cursor to create dev docs; keep under **backend/docs**; presentation-style with diagrams |
 
 ---
