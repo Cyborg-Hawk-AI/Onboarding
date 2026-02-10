@@ -3,6 +3,8 @@
 **Last updated:** 2026-01-27  
 **Purpose:** Define how your team uses GitHub and Cursor as your CI/CD pipeline—playground vs production, and how 4 engineers work together responsibly.
 
+**Doc standard:** Team docs are presentation-style (tables, diagrams, charts). See `TEAM_SETUP_AND_TOOLS.md` for full documentation standards and “documentation as you build.”
+
 ---
 
 ## What "help me" means here

@@ -71,3 +71,4 @@ Then fix any conflicts if Git reports them, and run `./scripts/push-to-playgroun
 
 - **Full strategy:** `docs/GIT_AND_CICD_STRATEGY.md`
 - **Presentation:** `docs/TEAM_ONBOARDING_PRESENTATION.md`
+- **Setup, tools, doc-as-you-build:** `docs/TEAM_SETUP_AND_TOOLS.md` (presentation-style; dev docs go under `backend/docs`)
