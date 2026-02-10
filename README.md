@@ -20,6 +20,7 @@ Git training and protocol for the team: two-repo model (playground vs production
 | **docs/GIT_AND_CICD_STRATEGY.md** | Full strategy: two repos, remotes, branch, overwrites, promotion to production |
 | **docs/GIT_QUICK_REFERENCE.md** | One-page quick reference: setup, daily workflow, one rule, troubleshooting |
 | **docs/TEAM_ONBOARDING_PRESENTATION.md** | Full presentation (with graphics/charts); use as the deck and script—no other media |
+| **docs/TEAM_SETUP_AND_TOOLS.md** | Google Workspace, Jira, EC2/Cursor, RDP from Mac, MFA prep—keep updated with progress |
 | **scripts/push-to-playground.sh** | Push to actionit-dev (origin dev-workspace); run from **actionit-dev** repo root |
 | **scripts/pull-latest.sh** | Pull from actionit-dev (origin dev-workspace); use before work or when you get errors; run from **actionit-dev** repo root |
 
