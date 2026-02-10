@@ -1,149 +1,243 @@
-# Team Onboarding: Git + axnt-dev-workspace
+# Git + Playground Workflow — Team Onboarding
 
-**Use this doc to run the meeting:** presentation outline, talking points, demo steps, and where to find the script and reference.
+**This document is the presentation.** No other slides or media. Use it as your deck and script.
 
-**Duration:** ~20–25 min (presentation + demo + Q&A)
-
----
-
-## 1. Welcome and goal (2 min)
-
-**Say:**
-- "We're standardizing how we work in the dev repo so everyone can work effectively and independently."
-- "By the end of this you'll know: where we work, how we push without overwriting each other, and you'll have a one-command way to push that still makes sense."
-
-**Slides / bullets:**
-- One dev repo: **axnt-dev-workspace**
-- One branch we use: **dev-workspace**
-- One rule: **pull before push**
-- One script: **`./scripts/push-to-dev.sh`** when you want to push
+**Duration:** ~20–25 min
 
 ---
 
-## 2. Two-repo model (3 min)
+# Slide 1 — Welcome
 
-**Say:**
-- "We have two GitHub repos. You only work in one of them."
-- "axnt-dev-workspace is our playground—everyone pushes here. The other repo is production; only [you / designated person] updates it after we validate things here."
+## We're standardizing how we work in the dev repo
 
-**Slides / bullets:**
+By the end of this you will know:
 
-| Repo | What it is | Who pushes |
-|------|------------|------------|
-| **axnt-dev-workspace** | Dev playground | All of us |
-| **Production repo** | Live site | [You] after validation |
-
-- "Your day-to-day work: clone axnt-dev-workspace, work on branch `dev-workspace`, push to the **axnt-dev** remote. We never push to the production remote from normal dev work."
+- **Where** we work (one repo, one branch)
+- **How** we push without overwriting each other
+- **What** to run when you want to push or when you get errors
 
 ---
 
-## 3. Remotes and branch (3 min)
+# Slide 2 — The big picture
 
-**Say:**
-- "If you already have this repo, it might have two remotes: **origin** (production) and **axnt-dev** (our dev repo). We only push to **axnt-dev**."
-- "We use one branch: **dev-workspace**. All our work and all our pushes go to that branch."
+## Two repos, two roles
 
-**Slides / bullets:**
-- **Remote `axnt-dev`** → axnt-dev-workspace (push here)
-- **Remote `origin`** → production (do not push here from dev)
-- **Branch:** `dev-workspace` only
-
-**Demo (optional):**
-```bash
-git remote -v
-git branch --show-current
+```mermaid
+flowchart LR
+  subgraph Playground["🟢 PLAYGROUND"]
+    A[actionit-dev]
+  end
+  subgraph Production["🔴 PRODUCTION"]
+    B[axnt-dev-workspace]
+  end
+  Team[("👥 All engineers")]
+  CTO[("👤 CTO / designated")]
+  Team -->|"push daily"| A
+  A -->|"promote when validated"| B
+  CTO -->|"push after validation"| B
 ```
-Show axnt-dev points to axnt-dev-workspace; we're on dev-workspace.
+
+| Repo | Role | Who pushes |
+|------|------|------------|
+| **actionit-dev** | 🟢 Playground | All of us |
+| **axnt-dev-workspace** | 🔴 Production | CTO after validation |
+
+**You only work in actionit-dev.** Production is updated only when we promote validated code.
 
 ---
 
-## 4. Why we don't overwrite each other (5 min)
+# Slide 3 — Where you work (playground)
 
-**Say:**
-- "Git doesn't overwrite file-by-file. It merges commits. So if you and I edit different files and we both push, we don't wipe each other's work—as long as we pull before we push."
-- "If you push and someone else already pushed, Git will reject your push and tell you to pull. You pull, Git merges their changes with yours, then you push again. Different files = merge is automatic. Same file, same lines = Git will ask you to resolve a conflict once."
+## One repo, one branch, one remote
 
-**Slides / bullets:**
-- Pull before push → you get others' latest commits.
-- Push rejected? → Pull, then push again.
-- Different files → no conflict; Git combines both.
-- Same file, same lines → conflict; we fix it once and push.
+```mermaid
+flowchart TB
+  subgraph Your Machine
+    Local["Your clone\n(actionit-dev)"]
+    Branch["Branch: dev-workspace"]
+  end
+  subgraph GitHub
+    Remote["origin → actionit-dev"]
+  end
+  Local --> Branch
+  Branch -->|"push / pull"| Remote
+```
 
-**Reference:** "Details are in `docs/GIT_AND_CICD_STRATEGY.md` under 'How Git prevents overwrites'."
+| What | Value |
+|------|--------|
+| **Repo** | actionit-dev (playground) |
+| **Remote** | `origin` |
+| **Branch** | `dev-workspace` |
+
+**Daily work:** Clone actionit-dev, work on `dev-workspace`, push to **origin dev-workspace**. We do **not** push to axnt-dev-workspace from normal dev work.
 
 ---
 
-## 5. Daily workflow (3 min)
+# Slide 4 — Why we don't overwrite each other
 
-**Say:**
-- "Start of day or before you start: pull so you have the latest."
-- "You code, commit, then push. We have a script that does pull + optional commit + push and prints what it's doing so it's not a black box."
+## Git merges commits; it doesn't overwrite file-by-file
 
-**Slides / bullets:**
+```mermaid
+sequenceDiagram
+  participant Dev1
+  participant Remote as origin (actionit-dev)
+  participant Dev2
+  Dev1->>Remote: push (FileA, FileB)
+  Dev2->>Remote: push (FileC, FileD) ❌ rejected
+  Remote-->>Dev2: "Updates were rejected"
+  Dev2->>Remote: pull (gets Dev1's commit)
+  Note over Dev2: Merge: Dev1's A,B + Dev2's C,D
+  Dev2->>Remote: push ✅
+  Note over Remote: Everyone's changes combined
+```
 
-1. **Before work:** `git pull axnt-dev dev-workspace` (or run the script once with no changes to just pull).
+- **Pull before you push** → you get others' latest commits.
+- **Push rejected?** → Pull, then push again.
+- **Different files** → Git combines both automatically.
+- **Same file, same lines** → Git asks you to resolve a conflict once.
+
+---
+
+# Slide 5 — The one rule
+
+## Pull before push
+
+```mermaid
+flowchart LR
+  A[Start work] --> B[Pull]
+  B --> C[Code]
+  C --> D[Commit]
+  D --> E[Push]
+  E --> F{Done?}
+  F -->|Rejected| B
+  F -->|OK| G[✅]
+```
+
+**If your push is rejected:** run the pull script (or `git pull origin dev-workspace`), fix any conflicts if Git says so, then push again.
+
+---
+
+# Slide 6 — Daily workflow
+
+## Before work → Code → Push
+
+```mermaid
+flowchart TB
+  Start([Start of day]) --> Pull["Run: ./scripts/pull-latest.sh"]
+  Pull --> Work[Code in your editor]
+  Work --> Push["Run: ./scripts/push-to-playground.sh"]
+  Push --> Done([Your changes are on the playground])
+```
+
+1. **Before work:** `./scripts/pull-latest.sh` (or `git pull origin dev-workspace`).
 2. **Work** in your editor.
-3. **When you want to push:** Run `./scripts/push-to-dev.sh` from the repo root.
-   - Script will: switch to dev-workspace if needed, pull, show status, optionally add/commit (it will ask for a message), then push to axnt-dev.
-
-**Demo:** Run the script live. Show the messages (branch check, pull, status, commit prompt if there are changes, push). Emphasize: "Same steps you'd do by hand; the script just runs them and explains each step."
+3. **When you want to push:** `./scripts/push-to-playground.sh`.
 
 ---
 
-## 6. The push script (5 min)
+# Slide 7 — The scripts (no guessing)
 
-**Say:**
-- "We have a script so pushing is one command, but it's not magic—it runs the same Git commands we just talked about and prints what it's doing."
-- "You run it from the root of the repo: `./scripts/push-to-dev.sh`."
+## Two scripts, same repo root
 
-**Slides / bullets:**
-- **Where:** `scripts/push-to-dev.sh`
-- **What it does:**
-  - Ensures we're on branch `dev-workspace` (switches if not).
-  - Pulls from `axnt-dev dev-workspace`.
-  - Shows `git status`.
-  - If there are uncommitted changes: asks if you want to add/commit and asks for a commit message.
-  - Pushes to `axnt-dev dev-workspace`.
-- **Why it's safe:** No force-push, no pushing to origin; it only pushes to axnt-dev dev-workspace.
+| Script | When to use | What it does |
+|--------|-------------|--------------|
+| **push-to-playground.sh** | When you want to push your changes | Switches to dev-workspace if needed, pulls, shows status, optionally commits, pushes to **origin dev-workspace** |
+| **pull-latest.sh** | Before work or when you get errors (e.g. rejected push) | Pulls latest from **origin dev-workspace** so you have the team's changes |
 
-**Demo:** Run the script again; read the output lines and map them to the steps above.
+Both assume you're already authenticated (e.g. `gh auth login`) and using the actionit-dev repo. They only talk to **origin** (actionit-dev); they never push to production.
 
 ---
 
-## 7. Permissions and first-time setup (3 min)
+# Slide 8 — What the push script does (step by step)
 
-**Say:**
-- "You're being added as collaborators to axnt-dev-workspace, so you'll have permission to push via the CLI once you're set up."
-- "First time: clone the repo, install GitHub CLI if you want to use it, authenticate so Git can push. After that, the script and the workflow we just went over are all you need."
+```mermaid
+flowchart TB
+  A[Run ./scripts/push-to-playground.sh] --> B[On dev-workspace?]
+  B -->|No| C[Switch to dev-workspace]
+  B -->|Yes| D[Pull from origin]
+  C --> D
+  D --> E[Show git status]
+  E --> F[Uncommitted changes?]
+  F -->|Yes| G[Ask: add & commit?]
+  G --> H[Push to origin dev-workspace]
+  F -->|No| H
+  H --> I[✅ Done]
+```
 
-**Slides / bullets:**
-- **Clone (first time):**  
-  `git clone https://github.com/Cyborg-Hawk-AI/axnt-dev-workspace.git`  
-  then `cd axnt-dev-workspace` and `git checkout dev-workspace`.
-- **Auth:** Use GitHub CLI (`gh auth login`) or HTTPS with a personal access token so `git push` is allowed.
-- **Push:** Use `./scripts/push-to-dev.sh` (or the same steps by hand).
-
-**One-pager:** "After this meeting, use `docs/GIT_QUICK_REFERENCE.md` for the exact commands and the link to the full strategy doc."
-
----
-
-## 8. Q&A and wrap (5 min)
-
-**Suggestions:**
-- "What if I get 'Updates were rejected'?" → Pull, then run the script again (or push again).
-- "What if Git says there's a conflict?" → Open the file, fix the conflict markers (keep both sides or choose), save, then `git add` that file and run the script again (or commit and push).
-- "Can I push without the script?" → Yes: pull, then `git add` / `git commit` / `git push axnt-dev dev-workspace`. Script is for convenience and consistency.
-
-**Wrap:**
-- "We only work in axnt-dev-workspace on dev-workspace; we only push to axnt-dev; we pull before push; and we have a script to dummy-proof the push. Full details and the 'why' are in `docs/GIT_AND_CICD_STRATEGY.md` and `docs/GIT_QUICK_REFERENCE.md`."
+- **Safe:** No force-push, no pushing to production. Only **origin dev-workspace** (actionit-dev).
 
 ---
 
-## Checklist for you (presenter)
+# Slide 9 — When you get errors
 
-- [ ] Add everyone as collaborators to **axnt-dev-workspace** before or right after the meeting.
-- [ ] Share repo link: `https://github.com/Cyborg-Hawk-AI/axnt-dev-workspace`
-- [ ] Point to script: `scripts/push-to-dev.sh` (run from repo root).
+## Use the pull script first
+
+| Error or situation | What to do |
+|--------------------|------------|
+| **"Updates were rejected"** | Run `./scripts/pull-latest.sh`, then run `./scripts/push-to-playground.sh` again. |
+| **"Merge conflict"** | Open the file(s) Git names, fix the conflict markers (keep or edit both sides), save, `git add <file>`, then run the push script again. |
+| **Permission / auth** | Confirm you're a collaborator on actionit-dev and run `gh auth login` (or use your HTTPS token). |
+
+```mermaid
+flowchart LR
+  Error[❌ Error] --> Pull[Run pull-latest.sh]
+  Pull --> Fix[Fix conflicts if any]
+  Fix --> Push[Run push-to-playground.sh]
+  Push --> OK[✅]
+```
+
+---
+
+# Slide 10 — First-time setup
+
+## Clone, branch, auth
+
+```bash
+git clone https://github.com/Cyborg-Hawk-AI/actionit-dev.git
+cd actionit-dev
+git checkout dev-workspace
+gh auth login
+```
+
+- **Repo link:** https://github.com/Cyborg-Hawk-AI/actionit-dev  
+- **Scripts:** `scripts/push-to-playground.sh` and `scripts/pull-latest.sh` (run from repo root).  
+- **Quick reference:** `docs/GIT_QUICK_REFERENCE.md`  
+- **Full strategy:** `docs/GIT_AND_CICD_STRATEGY.md`
+
+---
+
+# Slide 11 — Recap
+
+## One place, one branch, one rule, two scripts
+
+| | |
+|--|--|
+| **Playground** | actionit-dev (remote **origin**) |
+| **Branch** | dev-workspace |
+| **Rule** | Pull before push |
+| **Push** | `./scripts/push-to-playground.sh` |
+| **Pull / errors** | `./scripts/pull-latest.sh` |
+
+We work only in **actionit-dev** on **dev-workspace**; we push only to **origin**. Production (axnt-dev-workspace) is updated only when the CTO promotes validated code.
+
+---
+
+# Slide 12 — Q&A and wrap
+
+**Common questions:**
+
+- **"Updates were rejected?"** → Run `./scripts/pull-latest.sh`, then push again.
+- **"Merge conflict?"** → Open the file, fix the markers, save, `git add` that file, run the push script again.
+- **"Can I push without the script?"** → Yes: `git pull origin dev-workspace`, then `git add` / `git commit` / `git push origin dev-workspace`.
+
+**Wrap:** All details and the "why" are in `docs/GIT_AND_CICD_STRATEGY.md` and `docs/GIT_QUICK_REFERENCE.md`. This doc is your presentation; no other supplemental media.
+
+---
+
+## Presenter checklist
+
+- [ ] Add everyone as collaborators to **actionit-dev** (playground).
+- [ ] Share repo: https://github.com/Cyborg-Hawk-AI/actionit-dev
+- [ ] Point to scripts: `scripts/push-to-playground.sh`, `scripts/pull-latest.sh`
 - [ ] Point to quick reference: `docs/GIT_QUICK_REFERENCE.md`
-- [ ] Point to full strategy: `docs/GIT_AND_CICD_STRATEGY.md`
-- [ ] Do a live demo of the script and, if possible, a quick pull → change → push so they see the flow once.
+- [ ] Demo: run pull script, then push script, and walk through the output.

@@ -1,6 +1,6 @@
-# Git quick reference — axnt-dev-workspace
+# Git quick reference — actionit-dev (playground)
 
-**One branch, one remote for dev. Pull before push. Use the script to push.**
+**One branch, one remote for daily work. Pull before push.**
 
 ---
 
@@ -8,25 +8,20 @@
 
 | What | Value |
 |------|--------|
-| **Repo** | axnt-dev-workspace |
-| **Remote for dev** | `axnt-dev` |
+| **Playground repo** | actionit-dev |
+| **Production repo** | axnt-dev-workspace (do not push here from daily work) |
+| **Remote for daily work** | `origin` (actionit-dev) |
 | **Branch** | `dev-workspace` |
-| **Production remote** | `origin` (do not push here from dev) |
 
 ---
 
 ## First-time setup
 
 ```bash
-# Clone (if you don't have the repo yet)
-git clone https://github.com/Cyborg-Hawk-AI/axnt-dev-workspace.git
-cd axnt-dev-workspace
-
-# Use the dev branch
+git clone https://github.com/Cyborg-Hawk-AI/actionit-dev.git
+cd actionit-dev
 git checkout dev-workspace
-
-# Auth (so you can push): use GitHub CLI or HTTPS with a token
-gh auth login
+gh auth login   # or use HTTPS token so you can push
 ```
 
 ---
@@ -35,32 +30,30 @@ gh auth login
 
 ### Before you start work
 ```bash
-git checkout dev-workspace
-git pull axnt-dev dev-workspace
+git pull origin dev-workspace
 ```
+Or: `./scripts/pull-latest.sh`
 
-### When you want to push (easiest)
-From repo root:
-```bash
-./scripts/push-to-dev.sh
-```
-The script will: switch to dev-workspace if needed, pull, show status, optionally add/commit (asks for message), then push to axnt-dev.
+### When you want to push
+From repo root: `./scripts/push-to-playground.sh`
 
-### Or do it by hand
+Or by hand:
 ```bash
-git checkout dev-workspace
-git pull axnt-dev dev-workspace
+git pull origin dev-workspace
 git add -A
-git commit -m "Short description of what you did"
-git push axnt-dev dev-workspace
+git commit -m "Short description"
+git push origin dev-workspace
 ```
+
+### When you get errors (rejected push, etc.)
+Run: `./scripts/pull-latest.sh`  
+Then fix any conflicts if Git reports them, and run `./scripts/push-to-playground.sh` again.
 
 ---
 
 ## One rule
 
-**Pull before you push.**  
-If push is rejected, run `git pull axnt-dev dev-workspace`, fix any conflicts if Git says so, then push again (or run the script again).
+**Pull before you push.** If push is rejected, run `./scripts/pull-latest.sh` (or `git pull origin dev-workspace`), then push again.
 
 ---
 
@@ -68,13 +61,13 @@ If push is rejected, run `git pull axnt-dev dev-workspace`, fix any conflicts if
 
 | Message | What to do |
 |--------|------------|
-| "Updates were rejected" | Run `git pull axnt-dev dev-workspace`, then push again (or run the script again). |
-| "Merge conflict" | Open the file(s) Git names, fix the conflict markers, save, then `git add <file>` and run the script again (or commit and push). |
-| "Permission denied" / "Authentication failed" | Check you're added as a collaborator and that you're logged in (`gh auth status` or your Git credentials). |
+| "Updates were rejected" | Run `./scripts/pull-latest.sh`, then push again (or run `./scripts/push-to-playground.sh`). |
+| "Merge conflict" | Open the file(s) Git names, fix conflict markers, save, `git add <file>`, then run the push script again. |
+| "Permission denied" | Check you're a collaborator on actionit-dev and logged in (`gh auth status`). |
 
 ---
 
 ## Docs
 
-- **Full strategy (two repos, overwrites, conflicts):** `docs/GIT_AND_CICD_STRATEGY.md`
-- **Onboarding presentation outline:** `docs/TEAM_ONBOARDING_PRESENTATION.md`
+- **Full strategy:** `docs/GIT_AND_CICD_STRATEGY.md`
+- **Presentation:** `docs/TEAM_ONBOARDING_PRESENTATION.md`
